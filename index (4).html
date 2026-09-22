@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Fiche de cours avec vidéo, contenu et QCM, organisée en chapitres déverrouillables.">
+<title>Fiche Multimédia</title>
+<style>
+  :root{
+    --paper:#F6F5F1;
+    --surface:#FFFFFF;
+    --surface-2:#FBFAF7;
+    --ink:#161B22;
+    --ink-2:#586074;
+    --line:#DEDBD2;
+    --line-strong:#C7C3B7;
+    --accent:#1C6E8C;
+    --accent-ink:#0F4C5C;
+    --accent-soft:#DCEBEF;
+    --amber:#C97A2E;
+    --amber-soft:#F3E3CF;
+    --good:#2F7D5A;
+    --good-soft:#DDEEE3;
+    --bad:#B23A48;
+    --bad-soft:#F5DEDF;
+    --radius:10px;
+    --shadow: 0 1px 2px rgba(22,27,34,.06), 0 6px 20px -10px rgba(22,27,34,.16);
+    --font-display:'IBM Plex Sans Condensed','Arial Narrow',sans-serif;
+    --font-body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#11151C; --surface:#171C24; --surface-2:#1C222C;
+      --ink:#EDEFF2; --ink-2:#9AA5B7;
+      --line:#2A3140; --line-strong:#3A4356;
+      --accent:#5FB3D4; --accent-ink:#8ED0E8; --accent-soft:#1C3A44;
+      --amber:#E0A052; --amber-soft:#3A2E1C;
+      --good:#5FBE8D; --good-soft:#1D3327;
+      --bad:#E2727F; --bad-soft:#3A1F23;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#11151C; --surface:#171C24; --surface-2:#1C222C;
+    --ink:#EDEFF2; --ink-2:#9AA5B7;
+    --line:#2A3140; --line-strong:#3A4356;
+    --accent:#5FB3D4; --accent-ink:#8ED0E8; --accent-soft:#1C3A44;
+    --amber:#E0A052; --amber-soft:#3A2E1C;
+    --good:#5FBE8D; --good-soft:#1D3327;
+    --bad:#E2727F; --bad-soft:#3A1F23;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(0,0,0,.55);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.55;
+    padding-inline:20px;
+    padding-block:28px 64px;
+  }
+  *{ box-sizing:border-box; }
+  h1,h2,h3,h4{ font-family:var(--font-display); font-weight:700; text-wrap:balance; margin:0; color:var(--ink); }
+  a{ color:var(--accent); }
+  button, input, textarea, select{ font-family:inherit; color:inherit; }
+  button{ cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  .page{ max-width:760px; margin:0 auto; }
+
+  .ruler{
+    height:6px;
+    background-image:repeating-linear-gradient(to right, var(--line-strong) 0 1px, transparent 1px 9px);
+    background-position:left center;
+    margin-block:14px;
+  }
+
+  /* header */
+  .head-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; font-weight:500;
+    color:var(--accent); text-transform:uppercase;
+  }
+  .mode-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--line-strong); border-radius:999px;
+    padding:6px 14px 6px 12px; font-size:12.5px; font-weight:600; color:var(--ink);
+    font-family:var(--font-mono);
+  }
+  .mode-btn:hover{ border-color:var(--accent); color:var(--accent-ink); }
+  .mode-btn.is-active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .title-row{ margin-top:10px; }
+  h1.title{ font-size:clamp(24px,5vw,30px); line-height:1.15; }
+  .title-input{
+    width:100%; font-family:var(--font-display); font-weight:700; font-size:clamp(22px,5vw,28px);
+    line-height:1.15; background:transparent; border:none; border-bottom:2px solid var(--line-strong);
+    padding:2px 0 6px; color:var(--ink);
+  }
+  .title-input:focus{ border-color:var(--accent); }
+
+  .meta-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .badge{
+    font-family:var(--font-mono); font-size:11.5px; font-weight:500; letter-spacing:.03em;
+    padding:4px 10px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink);
+    border:1px solid transparent; display:inline-flex; align-items:center; gap:4px;
+  }
+  .badge.amber{ background:var(--amber-soft); color:var(--amber); }
+  .badge.good-badge{ background:var(--good-soft); color:var(--good); }
+  .badge svg{ width:11px; height:11px; }
+  .meta-edit{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+  .meta-edit input{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:6px 10px; font-family:var(--font-mono); font-size:12.5px; color:var(--ink); min-width:120px;
+  }
+  .meta-edit input:focus{ border-color:var(--accent); }
+  .meta-edit label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2); display:block; margin-bottom:3px; }
+
+  /* chapter stepper */
+  .chapter-stepper{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-top:16px; }
+  .chapter-chip{
+    display:flex; align-items:center; gap:6px; flex:none; white-space:nowrap;
+    background:var(--surface); border:1px solid var(--line); border-radius:999px;
+    padding:5px 12px 5px 5px; font-family:var(--font-mono); font-size:12px; color:var(--ink-2);
+  }
+  .chapter-chip:disabled{ cursor:not-allowed; }
+  .chapter-chip .chip-num{
+    width:20px; height:20px; border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; color:var(--ink-2); flex:none;
+  }
+  .chapter-chip .chip-num svg{ width:11px; height:11px; }
+  .chapter-chip.is-active{ border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft); }
+  .chapter-chip.is-active .chip-num{ background:var(--accent); color:#fff; }
+  .chapter-chip.is-done .chip-num{ background:var(--good); color:#fff; }
+  .chapter-chip.is-locked{ opacity:.55; }
+  .chapter-chip.is-locked svg{ width:12px; height:12px; margin-left:1px; }
+  .chip-remove{ margin-left:2px; color:var(--ink-2); font-size:15px; line-height:1; padding:0 2px; }
+  .chip-remove:hover{ color:var(--bad); }
+  .chapter-chip.add-chip{ color:var(--accent-ink); border-style:dashed; }
+  .chapter-chip.add-chip svg{ width:12px; height:12px; }
+  .lock-hint{ display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-2); margin:8px 0 0; }
+  .lock-hint svg{ width:12px; height:12px; flex:none; }
+
+  .chapter-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:4px; flex-wrap:wrap; }
+  .chapter-title{ font-size:19px; }
+  .chapter-title-input{
+    flex:1; min-width:180px; font-family:var(--font-display); font-weight:700; font-size:19px;
+    background:transparent; border:none; border-bottom:2px solid var(--line-strong); padding:2px 0 4px; color:var(--ink);
+  }
+  .chapter-title-input:focus{ border-color:var(--accent); }
+  .chapter-move{ display:flex; gap:6px; flex:none; }
+  .chapter-move .btn{ padding:6px 9px; }
+
+  /* tabs */
+  .tabs{ display:flex; gap:4px; margin-top:16px; border-bottom:1px solid var(--line); }
+  .tab{
+    display:flex; align-items:center; gap:7px; background:transparent; border:none;
+    padding:10px 14px 12px; font-family:var(--font-mono); font-size:12.5px; font-weight:500;
+    letter-spacing:.05em; text-transform:uppercase; color:var(--ink-2);
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .tab svg{ width:16px; height:16px; flex:none; }
+  .tab:hover{ color:var(--ink); }
+  .tab.is-active{ color:var(--accent-ink); border-bottom-color:var(--accent); }
+
+  .panel{ padding-top:22px; }
+
+  /* video */
+  .video-frame{ position:relative; width:100%; aspect-ratio:16/9; border-radius:var(--radius); overflow:hidden; background:var(--surface-2); border:1px solid var(--line); box-shadow:var(--shadow); }
+  .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    text-align:center; color:var(--ink-2); padding:20px;
+  }
+  .empty svg{ width:34px; height:34px; opacity:.55; }
+  .empty p{ margin:0; font-size:13.5px; max-width:32ch; }
+  .field-label{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2); display:block; margin-bottom:6px; }
+  .url-input{
+    width:100%; background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:10px 12px; font-size:14px; color:var(--ink); margin-bottom:14px;
+  }
+  .url-input:focus{ border-color:var(--accent); }
+  .hint{ font-size:12px; color:var(--ink-2); margin-top:8px; }
+
+  /* cours */
+  .prose{ font-size:15px; }
+  .prose h2{ font-size:20px; margin-top:26px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  .prose h2:first-child{ margin-top:0; }
+  .prose h3{ font-size:17px; margin-top:20px; color:var(--accent-ink); }
+  .prose h4{ font-size:14.5px; margin-top:16px; }
+  .prose p{ margin:10px 0; color:var(--ink); }
+  .prose ul{ margin:10px 0; padding-left:20px; }
+  .prose li{ margin:4px 0; }
+  .prose li::marker{ color:var(--accent); }
+  .prose strong{ font-weight:600; color:var(--ink); }
+  .prose blockquote{
+    margin:14px 0; padding:10px 14px; border-left:3px solid var(--amber);
+    background:var(--amber-soft); border-radius:0 8px 8px 0; color:var(--ink); font-size:14px;
+  }
+  .prose code{ font-family:var(--font-mono); font-size:13px; background:var(--surface-2); border:1px solid var(--line); padding:1px 5px; border-radius:4px; }
+  .muted{ color:var(--ink-2); }
+
+  .cours-edit-grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media (min-width:800px){ .cours-edit-grid{ grid-template-columns:1fr 1fr; } }
+  .cours-textarea{
+    width:100%; min-height:320px; resize:vertical; background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:12px; font-family:var(--font-mono); font-size:13px; line-height:1.6; color:var(--ink);
+  }
+  .cours-textarea:focus{ border-color:var(--accent); }
+  .preview-box{ border:1px dashed var(--line-strong); border-radius:8px; padding:14px 16px; background:var(--surface-2); }
+  .preview-label{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2); margin-bottom:10px; }
+  .syntax-help{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--ink-2); margin-top:10px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:8px 10px;
+  }
+
+  /* qcm */
+  .q-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .q-head{ display:flex; align-items:baseline; gap:8px; margin-bottom:12px; }
+  .q-num{ font-family:var(--font-mono); font-size:12px; color:var(--accent); font-weight:600; }
+  .q-text{ font-weight:600; font-size:15px; }
+  .opt{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:7px; border:1px solid transparent; margin-bottom:6px; }
+  .opt:hover{ background:var(--surface-2); }
+  .opt input[type="radio"]{ accent-color:var(--accent); width:16px; height:16px; flex:none; }
+  .opt label{ font-size:14px; flex:1; }
+  .opt.is-correct{ background:var(--good-soft); border-color:var(--good); }
+  .opt.is-wrong{ background:var(--bad-soft); border-color:var(--bad); }
+  .opt-mark{ font-family:var(--font-mono); font-size:11px; font-weight:700; flex:none; }
+  .opt-mark.good{ color:var(--good); }
+  .opt-mark.bad{ color:var(--bad); }
+  .explain{ margin-top:10px; font-size:13px; color:var(--ink-2); background:var(--surface-2); border-radius:6px; padding:8px 10px; border-left:3px solid var(--accent); }
+
+  .qcm-actions{ display:flex; align-items:center; gap:12px; margin-top:6px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--font-mono); font-size:12.5px; font-weight:600; letter-spacing:.03em;
+    padding:9px 16px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+  }
+  .btn:hover{ border-color:var(--accent); color:var(--accent-ink); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn:disabled:hover{ border-color:var(--line-strong); color:var(--ink); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.primary:hover{ background:var(--accent-ink); border-color:var(--accent-ink); color:#fff; }
+  .btn.ghost{ border-color:transparent; background:transparent; }
+  .btn.small{ padding:5px 10px; font-size:11.5px; }
+  .btn.danger{ color:var(--bad); }
+  .btn.danger:hover{ border-color:var(--bad); }
+  .score-pill{
+    font-family:var(--font-mono); font-size:13px; font-weight:700; padding:7px 14px; border-radius:999px;
+    background:var(--accent-soft); color:var(--accent-ink);
+  }
+
+  /* qcm edit */
+  .q-edit-textarea{ width:100%; background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-size:14px; font-weight:600; margin-bottom:10px; resize:vertical; min-height:44px; }
+  .opt-edit-row{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .opt-edit-row input[type="text"]{ flex:1; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:7px 9px; font-size:13.5px; }
+  .opt-edit-row input[type="radio"]{ accent-color:var(--good); width:16px; height:16px; flex:none; }
+  .opt-remove{ background:none; border:none; color:var(--ink-2); font-size:16px; line-height:1; padding:2px 6px; flex:none; }
+  .opt-remove:hover{ color:var(--bad); }
+  .explain-edit{ width:100%; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:7px 9px; font-size:13px; margin-top:8px; resize:vertical; min-height:38px; }
+  .q-edit-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+
+  /* backup */
+  .backup{ margin-top:32px; border-top:1px solid var(--line); padding-top:18px; }
+  .backup summary{ font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2); cursor:pointer; }
+  .backup textarea{ width:100%; min-height:120px; margin-top:12px; background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:10px; font-family:var(--font-mono); font-size:11.5px; color:var(--ink); }
+  .backup-actions{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+  .status-msg{ font-size:12px; color:var(--good); font-family:var(--font-mono); }
+
+  @media (max-width:480px){
+    .tab{ padding:9px 9px 11px; font-size:11px; }
+  }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body>
+<div class="page" id="app"></div>
+
+<script>
+(function(){
+  "use strict";
+  var STORAGE_KEY = "fiche-multimedia:v2";
+
+  var ICONS = {
+    play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg>',
+    book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H12v16H5.5c-.8 0-1.5-.7-1.5-1.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H12v16h6.5c.8 0 1.5-.7 1.5-1.5z"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><path d="M6 7.5l1.3 1.3L9.5 6.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><path d="M14 6.5h6M14 12h6M14 17.5h6"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M4 20l1-4.2L15.8 5 19 8.2 8.2 19z"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>',
+    film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 8h18M3 16h18M8 3v18M16 3v18"/></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+    checkSm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    chevLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    chevRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>'
+  };
+
+  function uid(p){ return p + Math.random().toString(36).slice(2,9); }
+  function escape(s){
+    return String(s == null ? "" : s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function newChapter(title){
+    return {
+      id: uid("ch"), title: title || "Nouveau chapitre",
+      video: { url: "" }, cours: { text: "" }, qcm: { questions: [] },
+      done: false, attempt: {}, checked: false
+    };
+  }
+
+  function defaultState(){
+    return {
+      title: "Réseaux informatiques",
+      matiere: "SIN",
+      niveau: "Terminale",
+      activeChapter: 0,
+      activeTab: "video",
+      chapters: [
+        {
+          id: "ch1", title: "Les fondamentaux des réseaux",
+          video: { url: "" },
+          cours: { text:
+"# Les fondamentaux des réseaux\n" +
+"\n" +
+"## Objectifs\n" +
+"- Identifier les éléments d'un réseau local (LAN)\n" +
+"- Différencier adressage physique (MAC) et adressage logique (IP)\n" +
+"- Comprendre le rôle des équipements d'interconnexion\n" +
+"\n" +
+"## 1. Qu'est-ce qu'un réseau ?\n" +
+"\n" +
+"Un **réseau informatique** est un ensemble d'équipements reliés entre eux pour échanger des données. On distingue plusieurs échelles :\n" +
+"\n" +
+"- **LAN** (Local Area Network) : réseau local, à l'échelle d'un bâtiment\n" +
+"- **MAN** (Metropolitan Area Network) : à l'échelle d'une ville\n" +
+"- **WAN** (Wide Area Network) : à l'échelle d'un pays ou du monde, comme *Internet*\n" +
+"\n" +
+"## 2. Les équipements d'interconnexion\n" +
+"\n" +
+"- Le **switch** (commutateur) relie les machines d'un même réseau local et transmet les trames selon l'adresse MAC\n" +
+"- Le **routeur** relie deux réseaux différents et achemine les paquets selon l'adresse IP\n" +
+"- Le **point d'accès Wi-Fi** diffuse le réseau local sous forme de signal radio\n" +
+"\n" +
+"> À retenir : un switch travaille au niveau 2 (liaison), un routeur au niveau 3 (réseau) du modèle OSI.\n" +
+"\n" +
+"## 3. L'adressage IP\n" +
+"\n" +
+"Une adresse IPv4 s'écrit sur 32 bits, répartis en 4 octets (ex. `192.168.1.10`). Le masque de sous-réseau détermine la partie réseau et la partie machine de l'adresse."
+          },
+          qcm: { questions: [
+            { id:"q1", text:"Quel équipement relie deux réseaux différents en s'appuyant sur l'adresse IP ?",
+              options:[{id:"q1a",text:"Le switch"},{id:"q1b",text:"Le routeur"},{id:"q1c",text:"Le point d'accès Wi-Fi"},{id:"q1d",text:"Le répéteur"}],
+              correct:"q1b", explanation:"Le routeur fonctionne au niveau 3 (réseau) du modèle OSI et achemine les paquets selon l'adresse IP." },
+            { id:"q2", text:"Sur combien de bits est codée une adresse IPv4 ?",
+              options:[{id:"q2a",text:"16 bits"},{id:"q2b",text:"24 bits"},{id:"q2c",text:"32 bits"},{id:"q2d",text:"64 bits"}],
+              correct:"q2c", explanation:"Une adresse IPv4 est codée sur 32 bits, soit 4 octets." },
+            { id:"q3", text:"Quelle est l'échelle typique d'un réseau LAN ?",
+              options:[{id:"q3a",text:"Un pays entier"},{id:"q3b",text:"Une ville"},{id:"q3c",text:"Un bâtiment ou un site"},{id:"q3d",text:"Le monde entier"}],
+              correct:"q3c", explanation:"LAN signifie Local Area Network : un réseau local, à l'échelle d'un bâtiment ou d'un site." }
+          ] },
+          done:false, attempt:{}, checked:false
+        },
+        {
+          id: "ch2", title: "Le modèle OSI",
+          video: { url: "" },
+          cours: { text:
+"# Le modèle OSI\n" +
+"\n" +
+"Le modèle OSI (*Open Systems Interconnection*) décrit la communication réseau en **7 couches** empilées, de la couche physique à la couche application.\n" +
+"\n" +
+"## Les 7 couches\n" +
+"- 7. Application\n" +
+"- 6. Présentation\n" +
+"- 5. Session\n" +
+"- 4. Transport\n" +
+"- 3. Réseau\n" +
+"- 2. Liaison de données\n" +
+"- 1. Physique\n" +
+"\n" +
+"> À retenir : chaque couche ne communique qu'avec la couche immédiatement au-dessus ou en dessous d'elle."
+          },
+          qcm: { questions: [
+            { id:"q4", text:"Combien de couches compte le modèle OSI ?",
+              options:[{id:"q4a",text:"4"},{id:"q4b",text:"5"},{id:"q4c",text:"7"},{id:"q4d",text:"9"}],
+              correct:"q4c", explanation:"Le modèle OSI comporte 7 couches, de la couche physique à la couche application." },
+            { id:"q5", text:"À quelle couche du modèle OSI le routage IP appartient-il ?",
+              options:[{id:"q5a",text:"Application"},{id:"q5b",text:"Transport"},{id:"q5c",text:"Réseau"},{id:"q5d",text:"Liaison de données"}],
+              correct:"q5c", explanation:"Le routage selon l'adresse IP se fait au niveau de la couche 3 (Réseau)." }
+          ] },
+          done:false, attempt:{}, checked:false
+        }
+      ]
+    };
+  }
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(parsed && Array.isArray(parsed.chapters) && parsed.chapters.length) return parsed;
+      }
+    }catch(e){}
+    return defaultState();
+  }
+
+  var state = loadState();
+  var mode = "view"; // "view" | "edit"
+  var statusMsg = "";
+  var saveTimer = null;
+
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveNow, 400);
+  }
+  function saveNow(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  function currentChapter(){
+    if(state.activeChapter < 0 || state.activeChapter >= state.chapters.length) state.activeChapter = 0;
+    return state.chapters[state.activeChapter];
+  }
+
+  function isUnlocked(i){
+    return i === 0 || !!(state.chapters[i-1] && state.chapters[i-1].done);
+  }
+
+  function renderCours(text){
+    var lines = String(text || "").split(/\r?\n/);
+    var html = "", listBuf = [], paraBuf = [];
+    function inline(s){
+      return escape(s)
+        .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g,"<em>$1</em>")
+        .replace(/`(.+?)`/g,"<code>$1</code>");
+    }
+    function flushList(){ if(listBuf.length){ html += "<ul>" + listBuf.map(function(li){ return "<li>"+inline(li)+"</li>"; }).join("") + "</ul>"; listBuf = []; } }
+    function flushPara(){ if(paraBuf.length){ html += "<p>" + paraBuf.map(inline).join("<br>") + "</p>"; paraBuf = []; } }
+    lines.forEach(function(raw){
+      var line = raw.trim();
+      if(line === ""){ flushList(); flushPara(); return; }
+      if(line.indexOf("### ") === 0){ flushList(); flushPara(); html += "<h4>"+inline(line.slice(4))+"</h4>"; return; }
+      if(line.indexOf("## ") === 0){ flushList(); flushPara(); html += "<h3>"+inline(line.slice(3))+"</h3>"; return; }
+      if(line.indexOf("# ") === 0){ flushList(); flushPara(); html += "<h2>"+inline(line.slice(2))+"</h2>"; return; }
+      if(line.indexOf("> ") === 0){ flushList(); flushPara(); html += "<blockquote>"+inline(line.slice(2))+"</blockquote>"; return; }
+      if(line.indexOf("- ") === 0){ flushPara(); listBuf.push(line.slice(2)); return; }
+      flushList();
+      paraBuf.push(line);
+    });
+    flushList(); flushPara();
+    return html || '<p class="muted">Rien à afficher pour le moment.</p>';
+  }
+
+  function parseYouTubeId(url){
+    if(!url) return null;
+    var s = url.trim();
+    try{
+      var u = new URL(s);
+      var host = u.hostname.replace(/^www\./,"");
+      if(host === "youtu.be") return u.pathname.slice(1).split("/")[0] || null;
+      if(host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com"){
+        if(u.pathname === "/watch") return u.searchParams.get("v");
+        if(u.pathname.indexOf("/embed/") === 0) return u.pathname.split("/embed/")[1].split("/")[0];
+        if(u.pathname.indexOf("/shorts/") === 0) return u.pathname.split("/shorts/")[1].split("/")[0];
+        if(u.pathname.indexOf("/live/") === 0) return u.pathname.split("/live/")[1].split("/")[0];
+      }
+    }catch(e){
+      if(/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+    }
+    return null;
+  }
+
+  function tabButton(id, label, icon){
+    var active = state.activeTab === id;
+    return '<button class="tab'+(active?" is-active":"")+'" onclick="App.setTab(\''+id+'\')" aria-selected="'+active+'">'+
+      icon + '<span class="tab-label">'+label+'</span></button>';
+  }
+
+  function renderHeader(){
+    var editing = mode === "edit";
+    var top = '<div class="head-top">' +
+      '<span class="eyebrow">Fiche de cours</span>' +
+      '<button class="mode-btn'+(editing?" is-active":"")+'" onclick="App.toggleMode()">' +
+        (editing ? ICONS.eye + " Aperçu" : ICONS.edit + " Modifier") +
+      '</button>' +
+    '</div>';
+
+    var titleBlock;
+    if(editing){
+      titleBlock = '<div class="title-row"><input class="title-input" value="'+escape(state.title)+'" ' +
+        'oninput="App.updateField(\'title\', this.value)" placeholder="Titre de la fiche"></div>' +
+        '<div class="meta-edit">' +
+          '<div><label>Matière</label><input value="'+escape(state.matiere)+'" oninput="App.updateField(\'matiere\', this.value)" placeholder="ex. SNT"></div>' +
+          '<div><label>Niveau</label><input value="'+escape(state.niveau)+'" oninput="App.updateField(\'niveau\', this.value)" placeholder="ex. Seconde"></div>' +
+        '</div>';
+    } else {
+      titleBlock = '<div class="title-row"><h1 class="title">'+escape(state.title || "Fiche sans titre")+'</h1></div>' +
+        '<div class="meta-row">' +
+          (state.matiere ? '<span class="badge">'+escape(state.matiere)+'</span>' : "") +
+          (state.niveau ? '<span class="badge amber">'+escape(state.niveau)+'</span>' : "") +
+        '</div>';
+    }
+    return top + titleBlock;
+  }
+
+  function renderStepper(){
+    var chs = state.chapters;
+    var html = '<div class="chapter-stepper">';
+    chs.forEach(function(ch, i){
+      var unlocked = isUnlocked(i);
+      var clickable = mode === "edit" || unlocked;
+      var cls = "chapter-chip";
+      if(i === state.activeChapter) cls += " is-active";
+      if(ch.done) cls += " is-done";
+      if(!unlocked) cls += " is-locked";
+      var title = ch.title || ("Chapitre "+(i+1));
+      html += '<button class="'+cls+'" '+(clickable ? ('onclick="App.setChapter('+i+')"') : "disabled") +
+        ' title="'+(unlocked ? escape(title) : "Verrouillé — terminez le chapitre précédent")+'">' +
+        '<span class="chip-num">'+(ch.done ? ICONS.checkSm : (i+1))+'</span>' +
+        '<span class="chip-title">'+escape(title)+'</span>' +
+        (!unlocked ? ICONS.lock : "") +
+        (mode === "edit" && chs.length > 1 ? '<span class="chip-remove" onclick="event.stopPropagation();App.removeChapter('+i+')" title="Supprimer ce chapitre">&times;</span>' : "") +
+      '</button>';
+    });
+    if(mode === "edit"){
+      html += '<button class="chapter-chip add-chip" onclick="App.addChapter()">'+ICONS.plus+' Chapitre</button>';
+    }
+    html += '</div>';
+    var lockedCount = chs.filter(function(ch, i){ return !isUnlocked(i); }).length;
+    if(lockedCount > 0){
+      html += '<p class="lock-hint">'+ICONS.lock+' Un chapitre se déverrouille dès que le précédent est terminé (QCM corrigé).</p>';
+    }
+    return html;
+  }
+
+  function renderChapterHead(){
+    var i = state.activeChapter;
+    var ch = state.chapters[i];
+    var editing = mode === "edit";
+    var html = '<div class="chapter-head">';
+    if(editing){
+      html += '<input class="chapter-title-input" value="'+escape(ch.title)+'" oninput="App.updateChapterTitle('+i+', this.value)" placeholder="Titre du chapitre">' +
+        '<div class="chapter-move">' +
+          '<button class="btn small ghost" '+(i===0?"disabled":"")+' onclick="App.moveChapter('+i+',-1)" title="Déplacer avant">'+ICONS.chevLeft+'</button>' +
+          '<button class="btn small ghost" '+(i===state.chapters.length-1?"disabled":"")+' onclick="App.moveChapter('+i+',1)" title="Déplacer après">'+ICONS.chevRight+'</button>' +
+        '</div>';
+    } else {
+      html += '<h2 class="chapter-title">'+escape(ch.title || ("Chapitre "+(i+1)))+'</h2>';
+      if(ch.done) html += '<span class="badge good-badge">'+ICONS.checkSm+' Terminé</span>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderVideoTab(ch){
+    var editing = mode === "edit";
+    var id = parseYouTubeId(ch.video.url);
+    var out = "";
+    if(editing){
+      out += '<span class="field-label">Lien de la vidéo YouTube</span>' +
+        '<input class="url-input" id="videoUrlInput" value="'+escape(ch.video.url)+'" ' +
+        'placeholder="https://www.youtube.com/watch?v=..." oninput="App.updateVideoUrl(this.value)">';
+    }
+    if(id){
+      out += '<div class="video-frame"><iframe id="videoFrame" src="https://www.youtube-nocookie.com/embed/'+id+'" ' +
+        'title="Vidéo intégrée" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+    } else {
+      out += '<div class="video-frame"><div class="empty">' + ICONS.film +
+        '<p>'+(ch.video.url ? "Lien non reconnu — vérifiez qu'il s'agit bien d'une URL YouTube." : "Aucune vidéo pour l'instant.") +
+        (editing ? "" : ' Passez en mode « Modifier » pour coller un lien YouTube.') + '</p></div></div>';
+    }
+    return out;
+  }
+
+  function renderCoursTab(ch){
+    var editing = mode === "edit";
+    if(!editing){
+      return '<div class="prose">' + renderCours(ch.cours.text) + '</div>';
+    }
+    var help = '<div class="syntax-help"># Titre &nbsp;·&nbsp; ## Sous-titre &nbsp;·&nbsp; **gras** &nbsp;·&nbsp; *italique* &nbsp;·&nbsp; - liste &nbsp;·&nbsp; &gt; remarque</div>';
+    return '<div class="cours-edit-grid">' +
+      '<div><span class="field-label">Contenu (mise en forme simplifiée)</span>' +
+        '<textarea class="cours-textarea" oninput="App.updateCoursText(this.value)">'+escape(ch.cours.text)+'</textarea>' +
+        help +
+      '</div>' +
+      '<div><div class="preview-label">Aperçu</div><div class="preview-box"><div class="prose">'+renderCours(ch.cours.text)+'</div></div></div>' +
+    '</div>';
+  }
+
+  function renderQuestionView(q, i, ch){
+    var picked = ch.attempt[q.id];
+    var html = '<div class="q-card"><div class="q-head"><span class="q-num">Q'+(i+1)+'</span><span class="q-text">'+escape(q.text)+'</span></div>';
+    q.options.forEach(function(opt){
+      var cls = "opt";
+      var mark = "";
+      if(ch.checked){
+        if(opt.id === q.correct){ cls += " is-correct"; mark = '<span class="opt-mark good">✓</span>'; }
+        else if(opt.id === picked){ cls += " is-wrong"; mark = '<span class="opt-mark bad">✕</span>'; }
+      }
+      html += '<div class="'+cls+'">' +
+        '<input type="radio" name="'+q.id+'" id="'+opt.id+'" '+(picked===opt.id?"checked":"")+' '+(ch.checked?"disabled":"")+' onchange="App.selectAnswer(\''+q.id+'\',\''+opt.id+'\')">' +
+        '<label for="'+opt.id+'">'+escape(opt.text)+'</label>' + mark +
+      '</div>';
+    });
+    if(ch.checked && q.explanation){
+      html += '<div class="explain">'+escape(q.explanation)+'</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderQuestionEdit(q, i){
+    var html = '<div class="q-card">' +
+      '<div class="q-head"><span class="q-num">Q'+(i+1)+'</span></div>' +
+      '<textarea class="q-edit-textarea" oninput="App.updateQuestionText(\''+q.id+'\', this.value)" placeholder="Énoncé de la question">'+escape(q.text)+'</textarea>';
+    q.options.forEach(function(opt){
+      html += '<div class="opt-edit-row">' +
+        '<input type="radio" name="correct-'+q.id+'" '+(q.correct===opt.id?"checked":"")+' onchange="App.setCorrect(\''+q.id+'\',\''+opt.id+'\')" title="Bonne réponse">' +
+        '<input type="text" value="'+escape(opt.text)+'" oninput="App.updateOptionText(\''+q.id+'\',\''+opt.id+'\', this.value)" placeholder="Proposition">' +
+        (q.options.length > 2 ? '<button class="opt-remove" onclick="App.removeOption(\''+q.id+'\',\''+opt.id+'\')" title="Supprimer cette proposition">&times;</button>' : "") +
+      '</div>';
+    });
+    html += '<div class="qcm-actions">' +
+      (q.options.length < 6 ? '<button class="btn small" onclick="App.addOption(\''+q.id+'\')">+ Proposition</button>' : "") +
+    '</div>';
+    html += '<textarea class="explain-edit" oninput="App.updateExplanation(\''+q.id+'\', this.value)" placeholder="Explication affichée après correction (optionnel)">'+escape(q.explanation||"")+'</textarea>';
+    html += '<div class="q-edit-foot"><span class="hint">Cochez la bonne réponse ●</span><button class="btn small danger" onclick="App.removeQuestion(\''+q.id+'\')">Supprimer la question</button></div>';
+    html += '</div>';
+    return html;
+  }
+
+  function renderQcmTab(ch){
+    var editing = mode === "edit";
+    var qs = ch.qcm.questions;
+    if(editing){
+      var out = qs.map(renderQuestionEdit).join("");
+      out += '<button class="btn" onclick="App.addQuestion()">+ Ajouter une question</button>';
+      return out;
+    }
+    if(!qs.length){
+      return '<div class="empty">'+ICONS.check+'<p>Aucune question pour l\'instant. Passez en mode « Modifier » pour créer le QCM.</p></div>';
+    }
+    var out = qs.map(function(q,i){ return renderQuestionView(q,i,ch); }).join("");
+    if(!ch.checked){
+      out += '<div class="qcm-actions"><button class="btn primary" onclick="App.correctQuiz()">Corriger</button>' +
+        '<span class="hint">'+Object.keys(ch.attempt).length+' / '+qs.length+' répondue(s)</span></div>';
+    } else {
+      var score = qs.filter(function(q){ return ch.attempt[q.id] === q.correct; }).length;
+      out += '<div class="qcm-actions"><span class="score-pill">Score : '+score+' / '+qs.length+'</span>' +
+        '<button class="btn" onclick="App.restartQuiz()">Recommencer</button></div>';
+      var chapterIndex = state.chapters.indexOf(ch);
+      if(chapterIndex < state.chapters.length - 1){
+        out += '<p class="hint">Chapitre suivant déverrouillé : « '+escape(state.chapters[chapterIndex+1].title || ("Chapitre "+(chapterIndex+2)))+' ».</p>';
+      }
+    }
+    return out;
+  }
+
+  function renderBackup(){
+    if(mode !== "edit") return "";
+    return '<details class="backup"><summary>Sauvegarde &amp; transfert (JSON)</summary>' +
+      '<p class="hint">Le contenu (tous les chapitres) est enregistré automatiquement dans ce navigateur. Copiez ce texte pour le transférer vers un autre appareil, ou collez-en un pour l\'importer.</p>' +
+      '<textarea id="backupArea">'+escape(JSON.stringify(state, null, 2))+'</textarea>' +
+      '<div class="backup-actions">' +
+        '<button class="btn small" onclick="App.copyBackup()">Copier</button>' +
+        '<button class="btn small" onclick="App.importBackup()">Importer depuis ce texte</button>' +
+        '<button class="btn small danger" onclick="App.resetExample()">Réinitialiser l\'exemple</button>' +
+        (statusMsg ? '<span class="status-msg">'+escape(statusMsg)+'</span>' : "") +
+      '</div>' +
+    '</details>';
+  }
+
+  function render(){
+    var ch = currentChapter();
+
+    var tabs = '<nav class="tabs">' +
+      tabButton("video","Vidéo",ICONS.play) +
+      tabButton("cours","Cours",ICONS.book) +
+      tabButton("qcm","QCM",ICONS.check) +
+    '</nav>';
+
+    var panelContent = state.activeTab === "video" ? renderVideoTab(ch)
+      : state.activeTab === "cours" ? renderCoursTab(ch)
+      : renderQcmTab(ch);
+
+    var html = renderHeader() + '<div class="ruler"></div>' + renderStepper() + renderChapterHead() + tabs +
+      '<main class="panel">' + panelContent + '</main>' + renderBackup();
+
+    document.getElementById("app").innerHTML = html;
+  }
+
+  var App = {
+    setTab: function(id){ state.activeTab = id; scheduleSave(); render(); },
+    setChapter: function(i){
+      if(mode !== "edit" && !isUnlocked(i)) return;
+      state.activeChapter = i;
+      scheduleSave(); render();
+    },
+    toggleMode: function(){ mode = mode === "edit" ? "view" : "edit"; render(); },
+    updateField: function(key, val){ state[key] = val; scheduleSave(); },
+    updateChapterTitle: function(i, val){
+      state.chapters[i].title = val;
+      scheduleSave();
+      var chips = document.querySelectorAll(".chapter-stepper .chapter-chip");
+      if(chips[i]){
+        var t = chips[i].querySelector(".chip-title");
+        if(t) t.textContent = val || ("Chapitre "+(i+1));
+        var titleAttr = val || ("Chapitre "+(i+1));
+        chips[i].setAttribute("title", titleAttr);
+      }
+    },
+    addChapter: function(){
+      state.chapters.push(newChapter("Chapitre "+(state.chapters.length+1)));
+      state.activeChapter = state.chapters.length - 1;
+      state.activeTab = "video";
+      saveNow(); render();
+    },
+    removeChapter: function(i){
+      if(state.chapters.length <= 1) return;
+      if(!confirm("Supprimer ce chapitre et tout son contenu ?")) return;
+      state.chapters.splice(i, 1);
+      if(state.activeChapter > i) state.activeChapter--;
+      else if(state.activeChapter === i) state.activeChapter = Math.min(i, state.chapters.length - 1);
+      if(state.activeChapter < 0) state.activeChapter = 0;
+      saveNow(); render();
+    },
+    moveChapter: function(i, dir){
+      var j = i + dir;
+      if(j < 0 || j >= state.chapters.length) return;
+      var arr = state.chapters;
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      state.activeChapter = j;
+      saveNow(); render();
+    },
+    updateVideoUrl: function(val){
+      var ch = currentChapter();
+      ch.video.url = val;
+      scheduleSave();
+      var id = parseYouTubeId(val);
+      var frameWrap = document.querySelector(".video-frame");
+      if(!frameWrap) return;
+      if(id){
+        frameWrap.innerHTML = '<iframe id="videoFrame" src="https://www.youtube-nocookie.com/embed/'+id+'" title="Vidéo intégrée" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+      } else {
+        frameWrap.innerHTML = '<div class="empty">'+ICONS.film+'<p>'+(val ? "Lien non reconnu — vérifiez qu'il s'agit bien d'une URL YouTube." : "Aucune vidéo pour l'instant.")+'</p></div>';
+      }
+    },
+    updateCoursText: function(val){
+      var ch = currentChapter();
+      ch.cours.text = val;
+      scheduleSave();
+      var preview = document.querySelector(".preview-box .prose");
+      if(preview) preview.innerHTML = renderCours(val);
+    },
+    addQuestion: function(){
+      var ch = currentChapter();
+      ch.qcm.questions.push({
+        id: uid("q"), text: "", options: [{id:uid("o"),text:""},{id:uid("o"),text:""}], correct: null, explanation: ""
+      });
+      saveNow(); render();
+    },
+    removeQuestion: function(qid){
+      var ch = currentChapter();
+      ch.qcm.questions = ch.qcm.questions.filter(function(q){ return q.id !== qid; });
+      delete ch.attempt[qid];
+      saveNow(); render();
+    },
+    updateQuestionText: function(qid, val){
+      var ch = currentChapter();
+      var q = ch.qcm.questions.find(function(q){ return q.id === qid; });
+      if(q){ q.text = val; scheduleSave(); }
+    },
+    addOption: function(qid){
+      var ch = currentChapter();
+      var q = ch.qcm.questions.find(function(q){ return q.id === qid; });
+      if(q && q.options.length < 6){ q.options.push({id:uid("o"), text:""}); saveNow(); render(); }
+    },
+    removeOption: function(qid, oid){
+      var ch = currentChapter();
+      var q = ch.qcm.questions.find(function(q){ return q.id === qid; });
+      if(q && q.options.length > 2){
+        q.options = q.options.filter(function(o){ return o.id !== oid; });
+        if(q.correct === oid) q.correct = null;
+        saveNow(); render();
+      }
+    },
+    updateOptionText: function(qid, oid, val){
+      var ch = currentChapter();
+      var q = ch.qcm.questions.find(function(q){ return q.id === qid; });
+      if(!q) return;
+      var o = q.options.find(function(o){ return o.id === oid; });
+      if(o){ o.text = val; scheduleSave(); }
+    },
+    setCorrect: function(qid, oid){
+      var ch = currentChapter();
+      var q = ch.qcm.questions.find(function(q){ return q.id === qid; });
+      if(q){ q.correct = oid; scheduleSave(); }
+    },
+    updateExplanation: function(qid, val){
+      var ch = currentChapter();
+      var q = ch.qcm.questions.find(function(q){ return q.id === qid; });
+      if(q){ q.explanation = val; scheduleSave(); }
+    },
+    selectAnswer: function(qid, oid){ currentChapter().attempt[qid] = oid; },
+    correctQuiz: function(){ var ch = currentChapter(); ch.checked = true; ch.done = true; saveNow(); render(); },
+    restartQuiz: function(){ var ch = currentChapter(); ch.attempt = {}; ch.checked = false; saveNow(); render(); },
+    copyBackup: function(){
+      var area = document.getElementById("backupArea");
+      if(!area) return;
+      var text = area.value;
+      function done(ok){ statusMsg = ok ? "Copié dans le presse-papiers." : "Sélectionnez le texte puis copiez-le manuellement."; render(); }
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(function(){ done(true); }).catch(function(){ area.select(); done(false); });
+        } else { area.select(); done(false); }
+      }catch(e){ area.select(); done(false); }
+    },
+    importBackup: function(){
+      var area = document.getElementById("backupArea");
+      if(!area) return;
+      try{
+        var parsed = JSON.parse(area.value);
+        if(!parsed || !Array.isArray(parsed.chapters) || !parsed.chapters.length) throw new Error("format");
+        state = parsed;
+        if(state.activeChapter == null || state.activeChapter >= state.chapters.length) state.activeChapter = 0;
+        statusMsg = "Contenu importé.";
+        saveNow(); render();
+      }catch(e){
+        statusMsg = "JSON invalide — vérifiez le texte collé.";
+        render();
+      }
+    },
+    resetExample: function(){
+      if(!confirm("Remplacer tout le contenu actuel (tous les chapitres) par l'exemple de départ ?")) return;
+      state = defaultState();
+      saveNow(); render();
+    }
+  };
+  window.App = App;
+
+  function start(initData){
+    if(initData && Array.isArray(initData.chapters) && initData.chapters.length) state = initData;
+    render();
+    try{
+      if(window.claude && window.claude.hot && window.claude.hot.snapshot){
+        window.claude.hot.snapshot(function(){ return state; });
+      }
+    }catch(e){}
+  }
+
+  if(window.claude && window.claude.hot && window.claude.hot.ready){
+    window.claude.hot.ready(start);
+  } else {
+    start(window.claude && window.claude.hot ? window.claude.hot.data : null);
+  }
+})();
+</script>
+</body>
+</html>
